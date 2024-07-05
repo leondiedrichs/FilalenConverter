@@ -133,7 +133,7 @@ public class Converter {
             outLine[8] = "Nachname";
 
             // Telefonnummer
-            outLine[9] = line[6];
+            outLine[9] = line[6].replace(" - ", " ");
 
             // Email-Kasse
             outLine[10] = line[7];
