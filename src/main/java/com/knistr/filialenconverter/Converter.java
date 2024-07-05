@@ -93,7 +93,7 @@ public class Converter {
             String[] outLine = new String[OUTPUT_CELLS];
 
             // Filialnummer & Filiale
-            String filialnummer = "";
+            /*String filialnummer = "";
             String filiale = "";
 
             String name = line[1];
@@ -106,10 +106,10 @@ public class Converter {
                         filiale = name.substring(0, i);
                     }
                 }
-            }
+            }*/
 
-            outLine[0] = filialnummer;
-            outLine[1] = filiale;
+            outLine[0] = line[2];
+            outLine[1] = line[1];
 
             // Strasse & houseNumber
             String[] streetAndHousenumber = splitStreetAndHousenumber(line[3]);
