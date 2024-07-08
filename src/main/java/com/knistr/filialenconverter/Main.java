@@ -4,7 +4,7 @@ public class Main {
 
     private static final String XLSX_FILE_INPUT_PATH;
 
-    // Place File in the Root Directory of the Project
+    // Place File in Root-Directory of Project
 
     static {
         XLSX_FILE_INPUT_PATH = "Filialverzeichnis.xlsx";
