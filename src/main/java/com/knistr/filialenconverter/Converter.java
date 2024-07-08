@@ -16,30 +16,51 @@ import java.util.List;
 
 public class Converter {
 
-    // INPUT XLSX
-    // [0] Übergeordnete Gruppe, [1] Name, [2] Externe ID, [3] Straße, [4] PLZ, [5] Ort, [6] TelNr, [7] eMail
+    /*
+    Input .xlsx
+    [0] Übergeordnete Gruppe
+    [1] Name
+    [2] Externe ID
+    [3] Straße
+    [4] PLZ
+    [5] Ort
+    [6] TelNr
+    [7] eMail
+    */
 
-    // OUTPUT CSV
-    // [0] Filialnummer, [1] Filiale, [2] Strasse, [3] houseNumber, [4] Country, [5] Postleitzahl, [6] Ort, [7] Vorname, [8] Nachname, [9] Telefonnummer, [10] Email-Kasse
-    private final int OUTPUT_CELLS = 11;
+    /*
+    Output .csv
+    [0] Filialnummer
+    [1] Filiale
+    [2] Strasse
+    [3] houseNumber
+    [4] Country
+    [5] Postleitzahl
+    [6] Ort
+    [7] Vorname
+    [8] Nachname
+    [9] Telefonnummer
+    [10] Email-Kasse
+    */
+
+    public final int OUTPUT_CELLS = 11;
 
     private final List<String[]> input;
     private final List<String[]> output;
 
     public Converter(final String INPUT_PATH) {
-        final String OUTPUT_PATH = "CSV-" + INPUT_PATH.split("\\.")[0] + ".csv";
-
         input = new ArrayList<>();
-        loadInputData(INPUT_PATH);
-
         output = new ArrayList<>();
-        output.add(new String[] { "Filialnummer", "Filiale", "Strasse", "houseNumber", "Country", "Postleitzahl", "Ort", "Vorname", "Nachname", "Telefonnummer", "Email-Kasse" });
-        buildOutputData();
 
-        writeOutputFile(OUTPUT_PATH);
+        loadInput(INPUT_PATH);
+
+        output.add(new String[] { "Filialnummer", "Filiale", "Strasse", "houseNumber", "Country", "Postleitzahl", "Ort", "Vorname", "Nachname", "Telefonnummer", "Email-Kasse" });
+        buildOutput();
+
+        writeOutput("CSV-" + INPUT_PATH.split("\\.")[0] + ".csv");
     }
 
-    private void loadInputData(final String INPUT_PATH) {
+    private void loadInput(final String INPUT_PATH) {
         try (FileInputStream inputStream = new FileInputStream(new File(INPUT_PATH));
              XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
 
@@ -88,61 +109,59 @@ public class Converter {
         }
     }
 
-    private void buildOutputData() {
-        for (String[] line : input) {
-            String[] outLine = new String[OUTPUT_CELLS];
+    private void buildOutput() {
+        for (String[] in : input) {
+            String[] out = new String[OUTPUT_CELLS];
 
-            // Filialnummer & Filiale
-            /*String filialnummer = "";
-            String filiale = "";
 
-            String name = line[1];
-            char[] nameChars = name.toCharArray();
-            for (int i = 0; i < nameChars.length; i++) {
-                int next = i + 1;
-                if (nameChars[i] == ' ' && next < nameChars.length) {
-                    if (isNumeric(nameChars[next])) {
-                        filialnummer = name.substring(next);
-                        filiale = name.substring(0, i);
-                    }
-                }
-            }*/
+            // Filialnummer
+            out[0] = in[2];
 
-            outLine[0] = line[2];
-            outLine[1] = line[1];
 
-            // Strasse & houseNumber
-            String[] streetAndHousenumber = splitStreetAndHousenumber(line[3]);
-            outLine[2] = streetAndHousenumber[0];
-            outLine[3] = streetAndHousenumber[1];
+            // Filiale
+            out[1] = in[1];
+
+
+            String[] streetAndHousenumber = splitStreetAndHousenumber(in[3]);
+            // Strasse
+            out[2] = streetAndHousenumber[0];
+            // houseNumber
+            out[3] = streetAndHousenumber[1];
+
 
             // Country
-            // Currently Hardcoded because expected .xlsx only indirectly contains this Information!
-            outLine[4] = "DE";
+            out[4] = "DE";
+
 
             // Postleitzahl
-            outLine[5] = line[4];
+            out[5] = in[4];
+
 
             // Ort
-            outLine[6] = line[5];
+            out[6] = in[5];
+
 
             // Vorname
-            outLine[7] = "Vorname";
+            out[7] = "Vorname";
+
 
             // Nachname
-            outLine[8] = "Nachname";
+            out[8] = "Nachname";
+
 
             // Telefonnummer
-            outLine[9] = line[6].replace(" - ", " ");
+            out[9] = in[6].replace(" - ", " ");
+
 
             // Email-Kasse
-            outLine[10] = line[7];
+            out[10] = in[7];
 
-            output.add(outLine);
+
+            output.add(out);
         }
     }
 
-    private void writeOutputFile(final String OUTPUT_PATH) {
+    private void writeOutput(final String OUTPUT_PATH) {
         try (FileWriter writer = new FileWriter(OUTPUT_PATH)) {
             StringBuilder csv = new StringBuilder();
 
@@ -178,7 +197,7 @@ public class Converter {
                     // Check if ecountered Number belongs to the Street-Name
                     // By checking for the same Char-Combination a Second Time
                     while (j < chars.length) {
-                        if (chars[j] == ' ' && (j + 1) < chars.length) {
+                        if ((chars[j] == ' ' && chars[j - 1] != '-') && (j + 1) < chars.length) {
                             if (isNumeric(chars[j + 1])) {
                                 // Update i, break while-loop, contiue after
                                 i = j - 1;

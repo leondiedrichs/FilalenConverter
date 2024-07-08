@@ -10,7 +10,7 @@ public class Main {
         XLSX_FILE_INPUT_PATH = "Filialverzeichnis.xlsx";
     }
 
-    public static void main( String[] args ) {
+    public static void main(String[] args) {
         new Converter(XLSX_FILE_INPUT_PATH);
     }
 
